@@ -3,7 +3,7 @@ build-backend = "setuptools.build_meta"
 requires = [ "setuptools>=64", "setuptools-scm>=8" ]
 
 [project]
-name = "duck_goose"
+name = "duck-goose"
 version = "0.0.1"
 description = "An experiment with model context protocol (MCP)."
 readme = "README.md"
@@ -18,7 +18,9 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
+  "duckdb>=1.3",
   "langchain-ollama>=0.3.3",
+  "langgraph>=0.4.7",
 ]
 
 [dependency-groups]

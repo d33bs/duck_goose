@@ -44,4 +44,3 @@ jobs:
         uses: astral-sh/setup-uv@v6
       - name: Run pytest
         run: uv run --frozen pytest
-
