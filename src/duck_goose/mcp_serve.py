@@ -13,8 +13,10 @@ mcp = FastMCP("database_tools", version="0.1.0")
 
 
 @mcp.tool()
-async def initialise_database(db_path: str = "test.db") -> str:
-    """Create the SQLite-compatible DuckDB file and an `output` table."""
+async def initialize_database(db_path: str = "test.db") -> str:
+    """
+    Initialize a database.
+    """
     Path(db_path).touch(exist_ok=True)
     with duckdb.connect(database=db_path, read_only=False) as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS output (message VARCHAR);")
@@ -23,7 +25,9 @@ async def initialise_database(db_path: str = "test.db") -> str:
 
 @mcp.tool()
 async def add_row_to_database(db_path: str, message: str) -> str:
-    """Insert a row of text into the `output` table in *db_path*."""
+    """
+    Add a row to the database.
+    """
     with duckdb.connect(database=db_path, read_only=False) as conn:
         conn.execute("INSERT INTO output VALUES (?);", (message,))
     return db_path
@@ -31,7 +35,9 @@ async def add_row_to_database(db_path: str, message: str) -> str:
 
 @mcp.tool()
 async def show_database_output(db_path: str) -> str:
-    """Return all rows in `output` table as a newline-separated string."""
+    """
+    Show the output of the database.
+    """
     with duckdb.connect(database=db_path, read_only=False) as conn:
         rows = conn.execute("SELECT message FROM output;").fetchall()
     return "\n".join(r[0] for r in rows)

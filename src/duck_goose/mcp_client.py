@@ -12,12 +12,12 @@ from langchain_ollama import ChatOllama
 from langgraph.graph import START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
+# Clean up any existing database file
+if pathlib.Path("temp.db").exists():
+    pathlib.Path("temp.db").unlink()
+
 
 async def main() -> None:
-    # Clean up any existing database file
-    if pathlib.Path("temp.db").exists():
-        pathlib.Path("temp.db").unlink()
-
     client = MultiServerMCPClient(
         {
             "duckdb-tools": {
@@ -96,13 +96,11 @@ async def main() -> None:
         ),
     ]
 
-    # Invoke the model with a list of messages
-    messages = await react_graph.ainvoke(
+    # Invoke the model with a stream of messages
+    async for state in react_graph.astream(
         {"messages": messages}, {"recursion_limit": 100}
-    )
-
-    for m in messages["messages"]:
-        m.pretty_print()
+    ):
+        state[next(iter(state.keys()))]["messages"][0].pretty_print()
 
 
 if __name__ == "__main__":
