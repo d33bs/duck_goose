@@ -2,6 +2,12 @@
 
 An experiment with model context protocol (MCP).
 
+## Requirements
+
+1. [Install `uv`](https://docs.astral.sh/uv/getting-started/installation/) (environment management for Python)
+1. Install `ollama` (e.g. `brew install ollama`) (model management and server for llm model)
+1. See below for instructions.
+
 ## Demonstrations goal
 
 The goal of all demonstrations here involves asking an LLM to create a database and single table with records "duck", "duck", "goose".
