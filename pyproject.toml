@@ -95,7 +95,7 @@ echo "[poe] running local tools example"
 uv run python src/duck_goose/local_tools.py
 
 # ── if the client finishes normally, cleanup happens via the trap ─────
-""", help = "Pull model ⇒ start ollama ⇒ run local tool example ⇒ shut everything down" }
+""", help = "Runs a local tool demo with ollama, llama3.2, and langgraph." }
 
 ### One *orchestrator* task that does start ➜ run ➜ stop
 mcp_demo = { shell = """
@@ -124,7 +124,7 @@ sleep 2
 uv run python src/duck_goose/mcp_client.py
 
 # ── if the client finishes normally, cleanup happens via the trap ─────
-""", help = "Pull model ⇒ start servers ⇒ run client ⇒ shut everything down" }
+""", help = "Runs an mcp-based tool demo with ollama, llama3.2, and langgraph." }
 
 [tool.jupytext]
 formats = "ipynb,py:light"
