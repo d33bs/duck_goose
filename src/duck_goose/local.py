@@ -2,6 +2,7 @@
 An example module for a Python research software project.
 """
 
+import pathlib
 from typing import Any, Dict
 
 import duckdb
@@ -9,7 +10,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
-import pathlib
 
 # Clean up any existing database file
 if pathlib.Path("temp.db").exists():
@@ -87,11 +87,11 @@ messages = [
     HumanMessage(
         content=(
             """
-1. Initialize a database at the path temp.db using the 
+1. Initialize a database at the path temp.db using the
 tool `initialize_database`.
 2. Add rows to that database with the messages
 'duck', 'duck', and 'goose' using the tool `add_row_to_database`.
-3. Finally, show the output of the database using the 
+3. Finally, show the output of the database using the
 tool `show_database_output`.
 
 The output of the database will be:
