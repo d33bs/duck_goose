@@ -175,3 +175,5 @@ cython_debug/
 
 # project-specific ignores
 _version.py
+
+temp.db

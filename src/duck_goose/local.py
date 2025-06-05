@@ -15,6 +15,7 @@ import pathlib
 if pathlib.Path("temp.db").exists():
     pathlib.Path("temp.db").unlink()
 
+
 def intialize_database(database_path: str = "test.db") -> str:
     """
     Initialize a database.
@@ -85,13 +86,26 @@ react_graph = builder.compile()
 messages = [
     HumanMessage(
         content=(
-            "Initialize a database at the path temp.db"
-            " using the tool intialize_database."
-            " Then add a rows to that database with the messages:"
-            " 'duck', 'duck', 'goose' (we have a tool add_row_to_database"
-            " which can help with this )."
-            " Try not to add too many rows (we just want 3 rows)."
-            " Finally, show the output of the database."
+            """
+1. Initialize a database at the path temp.db using the 
+tool `initialize_database`.
+2. Add rows to that database with the messages
+'duck', 'duck', and 'goose' using the tool `add_row_to_database`.
+3. Finally, show the output of the database using the 
+tool `show_database_output`.
+
+The output of the database will be:
+```
+temp.db
+
++--------+
+| message |
++--------+
+| duck    |
+| duck    |
+| goose   |
++--------+
+"""
         )
     ),
 ]
@@ -99,5 +113,5 @@ messages = [
 # Invoke the model with a list of messages
 messages = react_graph.invoke({"messages": messages}, {"recursion_limit": 100})
 
-for m in messages['messages']:
+for m in messages["messages"]:
     m.pretty_print()
