@@ -2,17 +2,18 @@
 An example module for a Python research software project.
 """
 
+import asyncio
 import pathlib
 from typing import Any, Dict
-import asyncio
+
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_ollama import ChatOllama
 from langgraph.graph import START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
-from langchain_mcp_adapters.client import MultiServerMCPClient
+
 
 async def main() -> None:
-
     # Clean up any existing database file
     if pathlib.Path("temp.db").exists():
         pathlib.Path("temp.db").unlink()
@@ -20,7 +21,8 @@ async def main() -> None:
     client = MultiServerMCPClient(
         {
             "duckdb-tools": {
-                "url": "http://localhost:8000/mcp/",  # FastMCP's default streamable-HTTP path
+                # FastMCP's default streamable-HTTP path
+                "url": "http://localhost:8000/mcp/",
                 "transport": "streamable_http",
             }
         }
@@ -33,9 +35,7 @@ async def main() -> None:
     llama32_chat = ChatOllama(model="llama3.2", temperature=0)
 
     # bind the tools to the llm
-    llm_with_tools = llama32_chat.bind_tools(
-        tools=tools
-    )
+    llm_with_tools = llama32_chat.bind_tools(tools=tools)
 
     # System message
     sys_msg = SystemMessage(
@@ -49,7 +49,7 @@ async def main() -> None:
     async def assistant(state: MessagesState) -> Dict[str, Any]:
         msg = await llm_with_tools.ainvoke([sys_msg] + state["messages"])
         return {"messages": [msg]}
-    
+
     # Graph
     builder = StateGraph(MessagesState)
 
@@ -97,10 +97,13 @@ async def main() -> None:
     ]
 
     # Invoke the model with a list of messages
-    messages = await react_graph.ainvoke({"messages": messages}, {"recursion_limit": 100})
+    messages = await react_graph.ainvoke(
+        {"messages": messages}, {"recursion_limit": 100}
+    )
 
     for m in messages["messages"]:
         m.pretty_print()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
