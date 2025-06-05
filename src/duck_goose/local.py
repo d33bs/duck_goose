@@ -53,7 +53,7 @@ llm_with_tools = llama32_chat.bind_tools(
 sys_msg = SystemMessage(
     content=(
         "You are a helpful assistant tasked with using tools"
-        " to help someone accomplish database tasks."
+        " to help someone accomplish database-related tasks."
     )
 )
 
@@ -87,14 +87,17 @@ messages = [
         content=(
             "Initialize a database at the path temp.db"
             " using the tool intialize_database."
-            " Then add a row to that database with the message 'duck'."
+            " Then add a rows to that database with the messages:"
+            " 'duck', 'duck', 'goose' (we have a tool add_row_to_database"
+            " which can help with this )."
+            " Try not to add too many rows (we just want 3 rows)."
             " Finally, show the output of the database."
         )
     ),
 ]
 
 # Invoke the model with a list of messages
-messages = react_graph.invoke({"messages": messages})
+messages = react_graph.invoke({"messages": messages}, {"recursion_limit": 100})
 
 for m in messages['messages']:
     m.pretty_print()

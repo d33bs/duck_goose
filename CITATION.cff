@@ -11,7 +11,7 @@ authors:
   - given-names: Dave
     family-names: Bunten
     orcid: "https://orcid.org/0000-0001-6041-3665"
-repository-code: "https://github.com/d33bs/mcp-experiment"
+repository-code: "https://github.com/d33bs/duck_goose"
 abstract: >-
   An experiment with model context protocol (MCP).
 keywords:
