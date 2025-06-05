@@ -16,9 +16,10 @@ if pathlib.Path("temp.db").exists():
     pathlib.Path("temp.db").unlink()
 
 
-def intialize_database(database_path: str = "test.db") -> str:
+def initialize_database(database_path: str = "test.db") -> str:
     """
-    Initialize a database.
+    Initialize a database and create a table called output
+    with one column called message, used in other tools.
     """
     with duckdb.connect(database=database_path, read_only=False) as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS output (message VARCHAR);")
@@ -47,7 +48,7 @@ def show_database_output(database_path: str) -> str:
 llama32_chat = ChatOllama(model="llama3.2", temperature=0)
 
 llm_with_tools = llama32_chat.bind_tools(
-    (tools := [intialize_database, add_row_to_database, show_database_output])
+    (tools := [initialize_database, add_row_to_database, show_database_output])
 )
 
 # System message
@@ -88,7 +89,9 @@ messages = [
         content=(
             """
 1. Initialize a database at the path temp.db using the
-tool `initialize_database`.
+tool `initialize_database`. This tool will create the
+database and a table called `output` with one column
+called `message`, used in other tools.
 2. Add rows to that database with the messages
 'duck', 'duck', and 'goose' using the tool `add_row_to_database`.
 3. Finally, show the output of the database using the
@@ -111,7 +114,7 @@ temp.db
 ]
 
 # Invoke the model with a list of messages
-messages = react_graph.invoke({"messages": messages}, {"recursion_limit": 100})
-
-for m in messages["messages"]:
-    m.pretty_print()
+for step, state in enumerate(
+    react_graph.stream({"messages": messages}, {"recursion_limit": 100})
+):
+    state[next(iter(state.keys()))]["messages"][0].pretty_print()

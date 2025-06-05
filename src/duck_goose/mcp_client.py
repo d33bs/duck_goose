@@ -74,7 +74,9 @@ async def main() -> None:
             content=(
                 """
     1. Initialize a database at the path temp.db using the
-    tool `initialize_database`.
+    tool `initialize_database`. This tool will create the
+    database and a table called `output` with one column
+    called `message`, used in other tools.
     2. Add rows to that database with the messages
     'duck', 'duck', and 'goose' using the tool `add_row_to_database`.
     3. Finally, show the output of the database using the

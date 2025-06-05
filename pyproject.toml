@@ -73,13 +73,58 @@ lint.per-file-ignores."__init__.py" = [ "F401" ]
 pythonpath = [ "." ]
 
 [tool.poe.tasks]
-# tasks for development environments
-test.shell = """
-pytest
-"""
-jupyter.shell = """
-jupyter lab
-"""
+local_tool_demo = { shell = """
+set -euo pipefail
+
+# ── start OLLAMA server (if not already running) ──────────────────────
+ollama serve >/dev/null 2>&1 &
+OLLAMA_PID=$!
+echo '[poe] ollama serve PID='$OLLAMA_PID
+
+# ── pull the model ──────────────────────────────────────────────
+ollama pull llama3.2
+
+# ── be a good citizen: make sure we tidy up on exit or Ctrl-C ─────────
+trap 'echo; echo "[poe] cleaning up"; kill $OLLAMA_PID; wait; exit' INT TERM EXIT
+
+# ── give the servers a moment to bind their sockets ───────────────────
+sleep 2
+
+# ── run the LangGraph local tool example (foreground) ─────────────────────────────
+echo "[poe] running local tools example"
+uv run python src/duck_goose/local_tools.py
+
+# ── if the client finishes normally, cleanup happens via the trap ─────
+""", help = "Pull model ⇒ start ollama ⇒ run local tool example ⇒ shut everything down" }
+
+### One *orchestrator* task that does start ➜ run ➜ stop
+mcp_demo = { shell = """
+set -euo pipefail
+
+# ── start OLLAMA server (if not already running) ──────────────────────
+ollama serve >/dev/null 2>&1 &
+OLLAMA_PID=$!
+echo '[poe] ollama serve PID='$OLLAMA_PID
+
+# ── pull the model ──────────────────────────────────────────────
+ollama pull llama3.2
+
+# ── start the FastMCP DuckDB server ───────────────────────────────────
+uv run python src/duck_goose/mcp_serve.py >/dev/null 2>&1 &
+MCP_PID=$!
+echo '[poe] mcp_serve.py PID='$MCP_PID
+
+# ── be a good citizen: make sure we tidy up on exit or Ctrl-C ─────────
+trap 'echo; echo "[poe] cleaning up"; kill $MCP_PID $OLLAMA_PID; wait; exit' INT TERM EXIT
+
+# ── give the servers a moment to bind their sockets ───────────────────
+sleep 2
+
+# ── run the LangGraph client (foreground) ─────────────────────────────
+uv run python src/duck_goose/mcp_client.py
+
+# ── if the client finishes normally, cleanup happens via the trap ─────
+""", help = "Pull model ⇒ start servers ⇒ run client ⇒ shut everything down" }
 
 [tool.jupytext]
 formats = "ipynb,py:light"
