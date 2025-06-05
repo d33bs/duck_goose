@@ -1,0 +1,134 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=64", "setuptools-scm>=8" ]
+
+[project]
+name = "duck-goose"
+version = "0.0.1"
+description = "An experiment with model context protocol (MCP)."
+readme = "README.md"
+authors = [
+  { name = "Dave Bunten" },
+]
+requires-python = ">=3.11"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "duckdb>=1.3",
+  "fastapi>=0.115.12",
+  "langchain-mcp-adapters>=0.1.4",
+  "langchain-ollama>=0.3.3",
+  "langgraph>=0.4.7",
+  "mcp[cli]>=1.9.2",
+  "uvicorn>=0.34.3",
+]
+
+[dependency-groups]
+dev = [
+  "poethepoet>=0.34",
+  "pytest>=8.3.5",
+]
+
+[tool.setuptools_scm]
+root = "."
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+version_file = "src/duck_goose/_version.py"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+fix = true
+lint.select = [
+  # flake8-builtins
+  "A",
+  # flake8-annotations
+  "ANN",
+  # flake8-comprehensions
+  "C4",
+  # mccabe
+  "C90",
+  # pycodestyle
+  "E",
+  # pyflakes
+  "F",
+  # isort
+  "I",
+  # pylint
+  "PL",
+  # ruff
+  "RUF",
+  # flake8-simplify
+  "SIM",
+  "W",
+]
+# Ignore `F401` (unused imports) for `__init__.py` file
+lint.per-file-ignores."__init__.py" = [ "F401" ]
+
+[tool.pytest.ini_options]
+pythonpath = [ "." ]
+
+[tool.poe.tasks]
+local_tool_demo = { shell = """
+set -euo pipefail
+
+# ── start OLLAMA server (if not already running) ──────────────────────
+ollama serve >/dev/null 2>&1 &
+OLLAMA_PID=$!
+echo '[poe] ollama serve PID='$OLLAMA_PID
+
+# ── pull the model ──────────────────────────────────────────────
+ollama pull llama3.2
+
+# ── make sure we tidy up on exit or Ctrl-C ─────────
+trap 'echo; echo "[poe] cleaning up"; kill $OLLAMA_PID; wait; exit' INT TERM EXIT
+
+# ── give the servers a moment to bind their sockets ───────────────────
+sleep 2
+
+# ── run the LangGraph local tool example (foreground) ─────────────────────────────
+echo "[poe] running local tools example"
+uv run python src/duck_goose/local_tools.py
+
+# ── if the client finishes normally, cleanup happens via the trap ─────
+""", help = "Runs a local tool demo with ollama, llama3.2, and langgraph." }
+
+### One *orchestrator* task that does start ➜ run ➜ stop
+mcp_demo = { shell = """
+set -euo pipefail
+
+# ── start OLLAMA server (if not already running) ──────────────────────
+ollama serve >/dev/null 2>&1 &
+OLLAMA_PID=$!
+echo '[poe] ollama serve PID='$OLLAMA_PID
+
+# ── pull the model ──────────────────────────────────────────────
+ollama pull llama3.2
+
+# ── start the MCP server ───────────────────────────────────
+uv run python src/duck_goose/mcp_serve.py >/dev/null 2>&1 &
+MCP_PID=$!
+echo '[poe] mcp_serve.py PID='$MCP_PID
+
+# ── make sure we tidy up on exit or Ctrl-C ─────────
+trap 'echo; echo "[poe] cleaning up"; kill $MCP_PID $OLLAMA_PID; wait; exit' INT TERM EXIT
+
+# ── give the servers a moment to bind their sockets ───────────────────
+sleep 2
+
+# ── run the LangGraph client (foreground) ─────────────────────────────
+uv run python src/duck_goose/mcp_client.py
+
+# ── if the client finishes normally, cleanup happens via the trap ─────
+""", help = "Runs an mcp-based tool demo with ollama, llama3.2, and langgraph." }
+
+[tool.jupytext]
+formats = "ipynb,py:light"
+
+[tool.vulture]
+min_confidence = 90
+paths = [ "src/duck_goose", "tests" ]

@@ -1,0 +1,24 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+---
+cff-version: 1.2.0
+title: duck_goose
+message: >-
+  If you use this software, please cite it using the
+  metadata from the CITATION.cff file.
+type: software
+authors:
+  - given-names: Dave
+    family-names: Bunten
+    orcid: "https://orcid.org/0000-0001-6041-3665"
+repository-code: "https://github.com/d33bs/duck_goose"
+abstract: >-
+  An experiment with model context protocol (MCP).
+keywords:
+  - python
+  - llms
+  - mcp
+  - tools
+  - agents
+  - demo
+license: BSD-3-Clause
