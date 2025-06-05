@@ -84,7 +84,7 @@ echo '[poe] ollama serve PID='$OLLAMA_PID
 # ── pull the model ──────────────────────────────────────────────
 ollama pull llama3.2
 
-# ── be a good citizen: make sure we tidy up on exit or Ctrl-C ─────────
+# ── make sure we tidy up on exit or Ctrl-C ─────────
 trap 'echo; echo "[poe] cleaning up"; kill $OLLAMA_PID; wait; exit' INT TERM EXIT
 
 # ── give the servers a moment to bind their sockets ───────────────────
@@ -109,12 +109,12 @@ echo '[poe] ollama serve PID='$OLLAMA_PID
 # ── pull the model ──────────────────────────────────────────────
 ollama pull llama3.2
 
-# ── start the FastMCP DuckDB server ───────────────────────────────────
+# ── start the MCP server ───────────────────────────────────
 uv run python src/duck_goose/mcp_serve.py >/dev/null 2>&1 &
 MCP_PID=$!
 echo '[poe] mcp_serve.py PID='$MCP_PID
 
-# ── be a good citizen: make sure we tidy up on exit or Ctrl-C ─────────
+# ── make sure we tidy up on exit or Ctrl-C ─────────
 trap 'echo; echo "[poe] cleaning up"; kill $MCP_PID $OLLAMA_PID; wait; exit' INT TERM EXIT
 
 # ── give the servers a moment to bind their sockets ───────────────────

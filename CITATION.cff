@@ -16,4 +16,9 @@ abstract: >-
   An experiment with model context protocol (MCP).
 keywords:
   - python
+  - llms
+  - mcp
+  - tools
+  - agents
+  - demo
 license: BSD-3-Clause

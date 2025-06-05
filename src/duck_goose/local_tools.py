@@ -113,6 +113,9 @@ temp.db
     ),
 ]
 
+# show the first message
+messages[0].pretty_print()
+
 # Invoke the model with a list of messages
 for step, state in enumerate(
     react_graph.stream({"messages": messages}, {"recursion_limit": 100})

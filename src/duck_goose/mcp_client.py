@@ -98,6 +98,9 @@ async def main() -> None:
         ),
     ]
 
+    # show the first message
+    messages[0].pretty_print()
+
     # Invoke the model with a stream of messages
     async for state in react_graph.astream(
         {"messages": messages}, {"recursion_limit": 100}
