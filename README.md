@@ -2,21 +2,19 @@
 
 An experiment with model context protocol (MCP).
 
-## Post template copy instructions
+## Demonstrations goal
 
-While we provide some customizations to the files in this template based on your specification there's likely a chance some things aren't perfect.
-We recommend taking a look at each file used within this template to ensure it meets your expectations for the project you're working on.
-In addition, consider the following steps to help ensure the project is in good shape before proceeding too far.
+The goal of all demonstrations here involves asking an LLM to create a database and single table with records "duck", "duck", "goose".
+We ask the LLM to perform this work using MCP or local [Tools](https://modelcontextprotocol.io/docs/concepts/tools).
+This allows the LLM to agentically achieve this work without specifying explicit programmatic instructions to accomplish this work.
 
-- [ ] Remove files you plan on not using (e.g. `src/notebooks`, `.github/workflows/publish-pypi.yml`, etc.).
-- [ ] Update the `LICENSE` file based on the project.
-- [ ] Update the `CITATION.cff` file based on the project.
-- [ ] Update the project dependencies using `uv remove` or `uv add`.
-- [ ] Update the `pyproject.toml` file based on the project.
-- [ ] Enable `pre-commit-lite` to help automate corrections to code during pull request updates. Otherwise, consider removing the step: labeled with: `pre-commit-ci/lite-action` within `.github/workflows/run-tests.yml`.
-- [ ] Enable private security vulnerability issue reporting within the repo settings (e.g. https://github.com/repo_org/repo_name/settings/security_analysis)
-- [ ] Enable [branch protection rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule) to require one pull request review approval per pull request to help with maintainer expectations.
-- [ ] Add collaborators to access the repository.
-- [ ] Create a `pages` branch and enable GitHub Pages on the repository (for documentation).
-- [ ] Update the GitHub repository description.
-- [ ] Remove these instructions!
+## Running the demonstrations
+
+We use `poethepoet` to create declarative tasks which run the demonstrations found here.
+You may list these by using `uv run poe`.
+Run these demo by using `uv run poe <task name>`.
+
+The following tasks exist:
+
+- `uv run poe local_tool_demo`: Run a local tool-based LLM example.
+- `uv run poe mcp_demo`: Run an mcp-based tool LLM example.
